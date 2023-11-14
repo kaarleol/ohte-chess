@@ -5,6 +5,7 @@
 Sovelluksen on määrä olla samalla laitteella kahden pelattava shakki. Sovellus saattaa tallentaa pelatut pelit historiaan jos pelin toteuttaminen onnistuu nopeasti.
 
 ##Käyttäjät
+
 Koska peli on paikallisesti pelattava, erilaisille käyttäjärooleille tuskin on tarvetta.
 
 ##Perusversion tarjoama toiminnallisuus
@@ -18,6 +19,7 @@ Lisäksi peli vaatii toki logiikan pelaajien siirtojen vuorotteluun.
 Siirrot todennäköisesti kirjataan ainakin alkuun perinteisellä [notaatiolla](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)), mutta jos aikaa jää, on mahdollista, että peliin lisätään mahdollisuus siirtoihin hiiren avulla.
 
 ##Jatkokehitysideoita
+
 -Historia pelien tallentamiseksi
 -Käyttöliittymäparannuksia, etenkin hiirellä drag & drop
 -Ajastetut pelit ja mahdollisuus erilaisiin aikaformaatteihin
