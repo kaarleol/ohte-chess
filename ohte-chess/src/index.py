@@ -1,24 +1,16 @@
-import board
-import turn
+from board import Board
+from turn import Turn
+from console_io import ConsoleIO
+from app import App
+
 
 def main():
-    currentTurn=turn.Turn()
-    print(currentTurn.which_player())
+    consoleIO = ConsoleIO()
+    turns=Turn()
+    gameboard=Board()
 
-    gameboard=board.Board()
-    gameboard.draw_board()
-
-    print(gameboard.location_translator("a", 1))
-    print(gameboard.location_translator("c", 3))
-    print(gameboard.location_translator("H", 8))  
-    print(gameboard.piece_owner("a", 1))
-    print(gameboard.piece_owner("c", 3))
-    print(gameboard.piece_owner("H", 8))  
-
-    currentTurn.pass_turn()
-    print(currentTurn.which_player())
-
-    return
+    game = App(gameboard, turns, consoleIO)
+    game.run()
 
 
 if __name__ == "__main__":

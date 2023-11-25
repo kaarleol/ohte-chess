@@ -8,7 +8,8 @@ class Board:
         self.row3 = ["3|"] + [None] * 8
         self.row2 = ["2|", "P", "P", "P", "P", "P", "P", "P", "P"]
         self.row1 = ["1|", "R", "N", "B", "Q", "K", "B", "N", "R"]
-        self.bottomrow = ["‾|", "A̅", "B̅", "C̅", "D̅", "E̅", "F̅", "G̅", "H̅"]
+        self.bottomrow1 = ["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"]
+        self.bottomrow2 = [" |", "A", "B", "C", "D", "E", "F", "G", "H"]
 
     def draw_board(self):
         self.draw_row(self.row8)
@@ -19,7 +20,8 @@ class Board:
         self.draw_row(self.row3)
         self.draw_row(self.row2)
         self.draw_row(self.row1)
-        self.draw_row(self.bottomrow)
+        self.draw_row(self.bottomrow1)
+        self.draw_row(self.bottomrow2)
 
     def draw_row(self, row):
         newrow = []
@@ -35,6 +37,7 @@ class Board:
         if column and column.lower() in "abcdefgh":
             column = "abcdefgh".index(column.lower()) + 1
         else: 
+            print("here")
             return False
 
         if row == 1:
@@ -61,12 +64,17 @@ class Board:
         
     def piece_owner(self, column, row):
         val = self.location_translator(column, row)
-        if val == None:
+        if val == None or val == False:
+            print("none or false")
             return False
+            
         elif val.islower():
-            return "black"
+            print("black")
+            return "Black"
+
         elif val.isupper():
-            return "white"
+            print("white")
+            return "White"
         
         return False
 
