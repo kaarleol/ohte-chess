@@ -1,6 +1,6 @@
-#Changelog
+# Changelog
 
-##Viikko 4
+## Viikko 4
 * Sovelluksen teko aloitettu
 * Sovellus piirtää alustavan shakkilaudan komentoriville
 * Pelaajien vuorot vaihtelevat
