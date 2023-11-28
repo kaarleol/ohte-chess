@@ -1,5 +1,6 @@
 ## Ohjelmistotekniikka, harjoitustyö
-#Ohte-chess
+
+# ohte-chess
 
 Harjoitustyön aihe on kahden henkilön pelattava shakki. Tällä hetkellä sovellus on avattavissa komentorivillä ja sinne piirretään kuvaa shakkilaudasta.
 
@@ -9,7 +10,8 @@ Harjoitustyön aihe on kahden henkilön pelattava shakki. Tällä hetkellä sove
 
 [Työaikakirjanpito](https://github.com/kaarleol/ohte-chess/blob/main/dokumentaatio/tyoaikakirjanpito.md)
 
-##Asennus
+## Asennus
+
 1. Asenna riippuvuudet ohte-chess-kansiossa komennolla:
 
 ```bash
