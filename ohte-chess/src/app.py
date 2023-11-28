@@ -1,5 +1,6 @@
 from services.legal_moves import Legal_move
 
+
 class App:
     def __init__(self, board, turn, io):
         self.board = board
@@ -7,25 +8,20 @@ class App:
         self.io = io
         self.legality = Legal_move(self.board)
 
-    
     def run(self):
         while True:
             self.board.draw_board()
-            self.currentPlayer = self.turn.which_player()
-            self.io.write(f"{self.currentPlayer}'s move")
-            self.move = self.io.read("Give the square you would like to move from (eg. a1):")
+            current_player = self.turn.which_player()
+            self.io.write(f"{current_player}'s move")
+            move = self.io.read(
+                "Give the square you would like to move from (eg. a1):")
 
-            if self.move == "exit":
+            if move == "exit":
                 break
-            self.io.write(f"{self.currentPlayer}, {move[0]}, {move[1]}")
-            if self.legality.correct_player(self.currentPlayer, move):
+            self.io.write(f"{current_player}, {move[0]}, {move[1]}")
+            if self.legality.correct_player(current_player, move):
                 self.io.write("yay this works")
-            else: 
+            else:
                 self.io.write("nope wrong playa")
-
-
-
-
-
 
             self.turn.pass_turn()

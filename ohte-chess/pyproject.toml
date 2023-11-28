@@ -7,11 +7,14 @@ authors = ["kaarleol <kaarlenloota@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+invoke = "^2.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 coverage = "^7.3.2"
+pylint = "^3.0.2"
+autopep8 = "^2.0.4"
 
 [build-system]
 requires = ["poetry-core"]

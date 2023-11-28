@@ -6,8 +6,8 @@ from app import App
 
 def main():
     consoleIO = ConsoleIO()
-    turns=Turn()
-    gameboard=Board()
+    turns = Turn()
+    gameboard = Board()
 
     game = App(gameboard, turns, consoleIO)
     game.run()

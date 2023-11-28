@@ -25,19 +25,18 @@ class Board:
 
     def draw_row(self, row):
         newrow = []
-        for i in row: 
+        for i in row:
             newrow.append(i)
         for i in range(len(newrow)):
             if newrow[i] == None:
                 newrow[i] = "_"
-        
+
         print(" ".join(newrow))
 
     def location_translator(self, column, row):
         if column and column.lower() in "abcdefgh":
             column = "abcdefgh".index(column.lower()) + 1
-        else: 
-            print("here")
+        else:
             return False
 
         if row == 1:
@@ -58,16 +57,15 @@ class Board:
             row = self.row8
         else:
             return False
-        
+
         return row[column]
-        
-        
+
     def piece_owner(self, column, row):
         val = self.location_translator(column, row)
         if val == None or val == False:
             print("none or false")
             return False
-            
+
         elif val.islower():
             print("black")
             return "Black"
@@ -75,8 +73,5 @@ class Board:
         elif val.isupper():
             print("white")
             return "White"
-        
+
         return False
-
-
-        
