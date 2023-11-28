@@ -21,8 +21,6 @@ class LegalMove:
         if not move:
             return False
 
-        print(f"thishappened, {move[0]}, {move[1]}")
-
         if self.board.piece_owner(move[0], move[1]) == player:
             return True
         return False
