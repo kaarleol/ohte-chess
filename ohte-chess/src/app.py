@@ -19,6 +19,7 @@ class App:
             if move == "exit":
                 break
             self.io.write(f"{current_player}, {move[0]}, {move[1]}")
+
             if self.legality.correct_player(current_player, move):
                 self.io.write("yay this works")
             else:
