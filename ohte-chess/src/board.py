@@ -27,7 +27,7 @@ class Board:
         newrow = []
         for i in row:
             newrow.append(i)
-        for i in enumerate(newrow):
+        for i in enumerate(newrow, start=0):
             if newrow[i] is None:
                 newrow[i] = "_"
 
@@ -39,26 +39,25 @@ class Board:
         else:
             return False
 
-        if row == 1:
-            row = self.row1
-        elif row == 2:
-            row = self.row2
-        elif row == 3:
-            row = self.row3
-        elif row == 4:
-            row = self.row4
-        elif row == 5:
-            row = self.row5
-        elif row == 6:
-            row = self.row6
-        elif row == 7:
-            row = self.row7
-        elif row == 8:
-            row = self.row8
-        else:
-            return False
+        row_mapping = {
+            1: "row1",
+            2: "row2",
+            3: "row3",
+            4: "row4",
+            5: "row5",
+            6: "row6",
+            7: "row7",
+            8: "row8",
+        }
 
-        return row[column]
+        mapped_row = row_mapping.get(row, False)
+
+        if mapped_row:
+            row = getattr(self, mapped_row)
+            return row[column]
+
+        return False
+
 
     def piece_owner(self, column, row):
         val = self.location_translator(column, row)
@@ -66,11 +65,11 @@ class Board:
             print("none or false")
             return False
 
-        elif val.islower():
+        if val.islower():
             print("black")
             return "Black"
 
-        elif val.isupper():
+        if val.isupper():
             print("white")
             return "White"
 

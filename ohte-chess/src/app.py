@@ -1,4 +1,4 @@
-from services.legal_moves import Legal_move
+from services.legal_moves import LegalMove
 
 
 class App:
@@ -6,7 +6,7 @@ class App:
         self.board = board
         self.turn = turn
         self.io = io
-        self.legality = Legal_move(self.board)
+        self.legality = LegalMove(self.board)
 
     def run(self):
         while True:

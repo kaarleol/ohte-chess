@@ -8,7 +8,6 @@ class Turn:
     def which_player(self):
         if self.turn % 2 == 0:
             return "Black"
-        elif not (self.turn % 2 == 0):
+        if self.turn % 2 != 0:
             return "White"
-        else:
-            return False
+        return False
