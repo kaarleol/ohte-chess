@@ -10,6 +10,8 @@ Harjoitustyön aihe on kahden henkilön pelattava shakki. Tällä hetkellä sove
 
 [Työaikakirjanpito](https://github.com/kaarleol/ohte-chess/blob/main/dokumentaatio/tyoaikakirjanpito.md)
 
+[Changelog](https://github.com/kaarleol/ohte-chess/blob/main/dokumentaatio/changelog.md)
+
 ## Asennus
 
 1. Asenna riippuvuudet ohte-chess-kansiossa komennolla:
