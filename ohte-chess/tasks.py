@@ -19,3 +19,7 @@ def lint(ctx):
 @task
 def autopep8_format(ctx):
     ctx.run("autopep8 --in-place --recursive src", pty=True)
+
+@task
+def test(ctx):
+    ctx.run("pytest src", pty=True)

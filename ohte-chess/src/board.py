@@ -27,8 +27,8 @@ class Board:
         newrow = []
         for i in row:
             newrow.append(i)
-        for i in range(len(newrow)):
-            if newrow[i] == None:
+        for i in enumerate(newrow):
+            if newrow[i] is None:
                 newrow[i] = "_"
 
         print(" ".join(newrow))
@@ -62,7 +62,7 @@ class Board:
 
     def piece_owner(self, column, row):
         val = self.location_translator(column, row)
-        if val == None or val == False:
+        if val is None or not val:
             print("none or false")
             return False
 

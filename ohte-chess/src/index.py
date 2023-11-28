@@ -5,11 +5,11 @@ from app import App
 
 
 def main():
-    consoleIO = ConsoleIO()
+    console_io = ConsoleIO()
     turns = Turn()
     gameboard = Board()
 
-    game = App(gameboard, turns, consoleIO)
+    game = App(gameboard, turns, console_io)
     game.run()
 
 
