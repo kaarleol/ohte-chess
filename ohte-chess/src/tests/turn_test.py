@@ -1,6 +1,7 @@
 import unittest
 from turn import Turn
 
+
 class TestTurn(unittest.TestCase):
     def setUp(self):
         self.test_turn = Turn()

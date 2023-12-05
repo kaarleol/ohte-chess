@@ -4,23 +4,24 @@ class LegalMove:
 
     def legal_pos(self, move):
         if not len(move) == 2:
-            return False
+            return False, "Err: not a legal position"
         if not move[0].lower() in "abcdefgh":
-            return False
+            return False, "Err: not a legal position"
         if not move[1].isdigit():
-            return False
+            return False, "Err: not a legal position"
         if not (int(move[1]) >= 0 and int(move[1]) <= 8):
-            return False
+            return False, "Err: not a legal position"
         return move[0], int(move[1])
 
     def correct_player(self, player, move):
-        if not (player and move):
-            return False
+        if player is None or move == '':
+            return False, "Err: missing player or move"
 
         move = self.legal_pos(move)
-        if not move:
-            return False
+        if move[0] is False:
+            return move
 
         if self.board.piece_owner(move[0], move[1]) == player:
             return True
-        return False
+
+        return False, "Err: wrong player's piece or empty square"

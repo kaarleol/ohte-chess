@@ -37,7 +37,7 @@ class Board:
         if column and column.lower() in "abcdefgh":
             column = "abcdefgh".index(column.lower()) + 1
         else:
-            return False
+            return False, "Err: Incorrect position"
 
         row_mapping = {
             1: "row1",
@@ -56,13 +56,14 @@ class Board:
             row = getattr(self, mapped_row)
             return row[column]
 
-        return False
-
+        return False, "Err: incorrect position"
 
     def piece_owner(self, column, row):
         val = self.location_translator(column, row)
-        if val is None or not val:
-            return False
+        if val is None:
+            return False, "Err: No piece there"
+        if len(val) == 2:
+            return val
 
         if val.islower():
             return "Black"
@@ -70,4 +71,40 @@ class Board:
         if val.isupper():
             return "White"
 
-        return False
+        return False, "Err: something went wrong with determining piece owner"
+
+    # Chatgpt: generated code asking changes to my location_translator
+    def move_piece(self, move_from, move_to):
+        column_from, row_from = move_from[0], int(move_from[1])
+        column_to, row_to = move_to[0], int(move_to[1])
+
+        # Check if the move_from and move_to positions are valid
+        if column_from.lower() not in "abcdefgh" or column_to.lower() not in "abcdefgh" \
+                or row_from not in range(1, 9) or row_to not in range(1, 9):
+            return False, "Err: Incorrect position"
+
+        # Convert column letter to index
+        column_from = "abcdefgh".index(column_from.lower()) + 1
+        column_to = "abcdefgh".index(column_to.lower()) + 1
+
+        # Get the attribute name for the rows
+        mapped_row_from = f"row{row_from}"
+        mapped_row_to = f"row{row_to}"
+
+        # Check if the row attributes exist
+        if not hasattr(self, mapped_row_from) or not hasattr(self, mapped_row_to):
+            return False, "Err: Incorrect position"
+
+        # Get the rows
+        row_from = getattr(self, mapped_row_from)
+        row_to = getattr(self, mapped_row_to)
+
+        # Get the piece from move_from and set it to None
+        piece = row_from[column_from]
+        row_from[column_from] = None
+
+        # Set the piece to move_to
+        row_to[column_to] = piece
+
+        return True
+    # generated code ends

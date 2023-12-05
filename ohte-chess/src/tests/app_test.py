@@ -21,13 +21,16 @@ class TestApp(unittest.TestCase):
         self.test_app.turn.which_player.assert_called()
 
         self.test_app.io.read.assert_called()
-        #loop should break before pass_turn baing called
+        # loop should break before pass_turn baing called
         self.test_app.turn.pass_turn.assert_not_called()
 
     def test_app_run_calls_services_correctly(self):
-        self.test_app.turn.which_player = MagicMock(side_effect=["White", "Black"])
-        self.test_app.io.read = MagicMock(side_effect=["a1", "exit"])
+        self.test_app.turn.which_player = MagicMock(
+            side_effect=["White", "Black"])
+        self.test_app.io.read = MagicMock(side_effect=["a2", "a3", "exit"])
         self.test_app.legality.correct_player = MagicMock(return_value=True)
+        self.test_app.board.move_piece = MagicMock(return_value=True)
+        self.test_app.legality.legal_pos = MagicMock(return_value=("a", 1))
 
         self.test_app.run()
 
@@ -36,7 +39,7 @@ class TestApp(unittest.TestCase):
 
         self.test_app.io.read.assert_called()
 
-        self.test_app.legality.correct_player.assert_called_with("White", "a1")
+        self.test_app.legality.correct_player.assert_called_with("White", "a2")
 
         self.test_app.turn.pass_turn.assert_called()
 

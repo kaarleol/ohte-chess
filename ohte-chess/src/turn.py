@@ -10,4 +10,4 @@ class Turn:
             return "Black"
         if self.turn % 2 != 0:
             return "White"
-        return False
+        return False, "Err: something is definitely not right"
