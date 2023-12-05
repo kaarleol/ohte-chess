@@ -7,3 +7,9 @@
 * Testaaminen aloitettu
 * Pylint otettu käyttöön
 * Invoke otettu käyttöön
+
+## Viikko 5
+* Parempia error-viestejä testaamiseen ja käytön selkeyttämiseen
+* Nappuloiden liikuttaminen lähtö- ja saapumisruudun kirjaamalla
+* Testejä
+* (oli kiire)
