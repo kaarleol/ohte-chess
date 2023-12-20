@@ -60,3 +60,17 @@ Tiedoston [.pylintrc](./.pylintrc) määrittelemät tarkistukset voi suorittaa k
 ```bash
 poetry run invoke lint
 ```
+
+### Pelin sisällä
+
+Poistu pelistä:
+
+```bash
+exit
+```
+
+Peru nappulan valinta:
+
+```bash
+cancel
+```
