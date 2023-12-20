@@ -13,3 +13,9 @@
 * Nappuloiden liikuttaminen lähtö- ja saapumisruudun kirjaamalla
 * Testejä
 * (oli kiire)
+
+## Viikko 6
+* Ei muutoksia
+
+## Viikko 7
+* Kaikki perussiirrot nappuloille
