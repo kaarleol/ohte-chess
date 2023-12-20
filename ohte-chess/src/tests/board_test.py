@@ -38,3 +38,7 @@ class testBoard(unittest.TestCase):
 
         val2 = self.test_board.location_translator('a', 3)
         self.assertEqual(val2, "P")
+
+    def test_move_to_direction_up(self):
+        val = self.test_board.move_to_direction( 'a2', 'up')
+        self.assertEqual(val, 'a3')

@@ -16,11 +16,14 @@ class App:
             self.board.draw_board()
             current_player = self.turn.which_player()
             self.io.write(f"{current_player}'s move")
+            legal_moves = []
 
             did_exit = False
+            did_cancel = False
+
             while True:
                 move = self.io.read(
-                    "Give the square you would like to move from (eg. a1):")
+                    "Give the square you would like to move from:")
 
                 if move == "exit":
                     did_exit = True
@@ -28,30 +31,45 @@ class App:
 
                 val = self.legality.correct_player(current_player, move)
                 if val is True:
+                    legal_moves = self.legality.legal_moves(move)
+                    print(legal_moves)
+                else:
+                    self.io.write(val[1])
+
+                if len(legal_moves) >= 1:
                     self.move_from = move
                     break
-                self.io.write(val[1])
+                else:
+                    self.io.write('Piece has no legal moves')
 
             while True:
                 if did_exit is True:
                     break
                 move = self.io.read(
-                    "Give the square you would like to move to (eg. a4):")
+                    "Give the square you would like to move to:")
 
                 if move == "exit":
                     did_exit = True
                     break
+                if move == 'cancel':
+                    did_cancel = True
+                    break
+
                 val = self.legality.legal_pos(move)
                 if val[0] is not False:
-                    self.move_to = move
-                    break
+                    if move in legal_moves:
+                        self.move_to = move
+                        break
+                    else:
+                        self.io.write('Not a legal move for that piece')
                 self.io.write(val[1])
 
             if did_exit is True:
                 break
 
-            val = self.board.move_piece(self.move_from, self.move_to)
-            if val is not True:
-                self.io.write(val[1])
-                break
-            self.turn.pass_turn()
+            if did_cancel is False:
+                val = self.board.move_piece(self.move_from, self.move_to)
+                if val is not True:
+                    self.io.write(val[1])
+                    break
+                self.turn.pass_turn()

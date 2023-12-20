@@ -78,33 +78,69 @@ class Board:
         column_from, row_from = move_from[0], int(move_from[1])
         column_to, row_to = move_to[0], int(move_to[1])
 
-        # Check if the move_from and move_to positions are valid
         if column_from.lower() not in "abcdefgh" or column_to.lower() not in "abcdefgh" \
                 or row_from not in range(1, 9) or row_to not in range(1, 9):
             return False, "Err: Incorrect position"
 
-        # Convert column letter to index
         column_from = "abcdefgh".index(column_from.lower()) + 1
         column_to = "abcdefgh".index(column_to.lower()) + 1
 
-        # Get the attribute name for the rows
         mapped_row_from = f"row{row_from}"
         mapped_row_to = f"row{row_to}"
 
-        # Check if the row attributes exist
         if not hasattr(self, mapped_row_from) or not hasattr(self, mapped_row_to):
             return False, "Err: Incorrect position"
 
-        # Get the rows
         row_from = getattr(self, mapped_row_from)
         row_to = getattr(self, mapped_row_to)
 
-        # Get the piece from move_from and set it to None
         piece = row_from[column_from]
         row_from[column_from] = None
 
-        # Set the piece to move_to
         row_to[column_to] = piece
 
         return True
     # generated code ends
+
+    def move_to_direction(self, move_from, direction):
+        if move_from[0] is not False:
+            column_from, row_from = move_from[0], int(move_from[1])
+        else:
+            return move_from
+
+        if direction == "up":
+            column_to, row_to = column_from, (row_from + 1)
+        elif direction == "down":
+            column_to, row_to = column_from, (row_from - 1)
+        elif direction == "right":
+            if column_from.lower() not in "abcdefg":
+                return False, "Error moving the piece right"
+
+            column_from = "abcdefgh".index(column_from.lower())
+            column_to = "abcdefgh"[column_from + 1]
+            row_to = row_from
+        elif direction == "left":
+            if column_from.lower() not in "bcdefgh":
+                return False, "Error moving the piece left"
+
+            column_from = "abcdefgh".index(column_from.lower())
+            column_to = "abcdefgh"[column_from - 1]
+            row_to = row_from
+        else:
+            return False, "Invalid direction"
+
+        move_to = column_to + str(row_to)
+        val = self.location_translator(column_to, row_to)
+
+        if val is None:
+            return move_to
+        if val[0] is not False:
+            return move_to
+
+        return False, f"Error moving the piece {direction}"
+
+    def break_move(self, move):
+        return move[0], int(move[1])
+
+    def combine_move(self, column, row):
+        return column + str(row)
