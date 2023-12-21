@@ -8,5 +8,6 @@
 | 05.12 | 2  | Parempi testikattavuus, kuvaavammat errorviestit ja alustava toiminnalisuus nappuloiden siirtelyyn |
 | 12.12 | 3  | Code review |
 | 20.12 | 4  | Siirtojen määrittely nappuloille|
-| **Total** | **16.5**  | |
+| 21.12 | 7  | Erikoissirtojen logiikkaa, tunnistus shakille ja matille, käyttöliittymäkomentoja, dokumentaatiota|
+| **Total** | **23.5**  | |
 
