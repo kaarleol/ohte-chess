@@ -1,6 +1,5 @@
 from services.legal_moves import LegalMove
 
-
 class App:
     def __init__(self, board, turn, io):
         self.board = board
@@ -15,11 +14,15 @@ class App:
         while True:
             self.board.draw_board()
             current_player = self.turn.which_player()
+            self.legality.current_turn = current_player
             self.io.write(f"{current_player}'s move")
             legal_moves = []
 
             did_exit = False
             did_cancel = False
+            val = self.legality.check_checker()
+            if val is True:
+                self.io.write('Check!')
 
             while True:
                 move = self.io.read(
@@ -68,8 +71,18 @@ class App:
                 break
 
             if did_cancel is False:
-                val = self.board.move_piece(self.move_from, self.move_to)
+                val = self.legality.log_move(self.move_from, self.move_to)
+                if val is not True:
+                    self.io.write(val[1])
+                    return
+                val = self.board.move_piece(self.move_from, self.move_to, current_player, False)
                 if val is not True:
                     self.io.write(val[1])
                     break
-                self.turn.pass_turn()
+                val = self.legality.would_be_in_check()
+                if val is True:
+                    self.io.write('Not a legal move due to check')
+                    self.board.go_back()
+                    self.legality.go_back_log()
+                else:
+                    self.turn.pass_turn()

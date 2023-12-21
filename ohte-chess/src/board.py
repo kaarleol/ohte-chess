@@ -1,5 +1,9 @@
 class Board:
-    def __init__(self):
+    def __init__(self, ui=None):
+        self.ui = ui
+        self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
+                               'takes':None, 'pawn_double_move':False, 'player':None}
+        self.squre_sixe = 40
         self.row8 = ["8|", "r", "n", "b", "q", "k", "b", "n", "r"]
         self.row7 = ["7|", "p", "p", "p", "p", "p", "p", "p", "p"]
         self.row6 = ["6|"] + [None] * 8
@@ -10,6 +14,12 @@ class Board:
         self.row1 = ["1|", "R", "N", "B", "Q", "K", "B", "N", "R"]
         self.bottomrow1 = ["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"]
         self.bottomrow2 = [" |", "A", "B", "C", "D", "E", "F", "G", "H"]
+        self.white_king_moved = False
+        self.a1_rook_moved = False
+        self.h1_rook_moved = False
+        self.black_king_moved = False
+        self.a8_rook_moved = False
+        self.h8_rook_moved = False
 
     def draw_board(self):
         self.draw_row(self.row8)
@@ -73,8 +83,12 @@ class Board:
 
         return False, "Err: something went wrong with determining piece owner"
 
-    # Chatgpt: generated code asking changes to my location_translator
-    def move_piece(self, move_from, move_to):
+    # Chatgpt: generated code asking changes to my location_translator, edited
+    def move_piece(self, move_from, move_to, player, no_log):
+        if no_log is False:
+            val = self.log_move(move_from, move_to, player)
+            if val is not True:
+                return False, 'Something very bad has happened with the log'
         column_from, row_from = move_from[0], int(move_from[1])
         column_to, row_to = move_to[0], int(move_to[1])
 
@@ -144,3 +158,77 @@ class Board:
 
     def combine_move(self, column, row):
         return column + str(row)
+
+    def log_move(self, move_from, move_to, current_turn):
+        self.previous_move['move_from'] = move_from
+        self.previous_move['move_to'] = move_to
+        column_from, row_from = self.break_move(move_from)
+        column_to, row_to = self.break_move(move_to)
+        moved_piece = self.location_translator(column_from, row_from)
+        if moved_piece:
+            #check for double pawn move for en passant
+            if moved_piece == 'P':
+                if self.move_to_direction(self.move_to_direction(
+                    move_from, 'up'), 'up') == move_to:
+                    self.previous_move['pawn_double_move']=True
+            elif moved_piece == 'p':
+                if self.move_to_direction(self.move_to_direction(
+                    move_from, 'down'), 'down') == move_to:
+                    self.previous_move['pawn_double_move']=True
+            else:
+                self.previous_move['pawn_double_move']=False
+            #save if king or rook moved to prevent castling
+            if moved_piece == 'K':
+                self.white_king_moved = True
+            if moved_piece == 'k':
+                self.black_king_moved = True
+            if moved_piece == 'R' and move_from.lower() == 'a1':
+                self.a1_rook_moved = True
+            if moved_piece == 'R' and move_from.lower() == 'h1':
+                self.h1_rook_moved = True
+            if moved_piece == 'r' and move_from.lower() == 'a8':
+                self.a8_rook_moved = True
+            if moved_piece == 'r' and move_from.lower() == 'h8':
+                self.h8_rook_moved = True
+            self.previous_move['moved_piece'] = moved_piece
+        else:
+            return False, "Please report this error - everything is wrong"
+        self.previous_move['takes'] = self.location_translator(column_to, row_to)
+        self.previous_move['player'] = current_turn
+        return True
+
+    def go_back(self):
+        val = self.move_piece(self.previous_move['move_to'],
+                         self.previous_move['move_from'], self.previous_move['player'], True)
+        if val is not True:
+            return val
+        if self.previous_move['takes'] is not None:
+            self.add_piece(self.previous_move['move_to'], self.previous_move['takes'])
+
+    def add_piece(self, square, piece):
+        column_to, row_to = self.break_move(square)
+        if  column_to.lower() not in "abcdefgh" \
+                 or row_to not in range(1, 9):
+            return False, "Err: Incorrect position"
+        column_to = "abcdefgh".index(column_to.lower()) + 1
+        mapped_row_to = f"row{row_to}"
+
+        if not hasattr(self, mapped_row_to):
+            return False, "Err: Incorrect position"
+        row_to = getattr(self, mapped_row_to)
+        row_to[column_to] = piece
+        return True
+
+    def remove_piece(self, square):
+        column_to, row_to = self.break_move(square)
+        if  column_to.lower() not in "abcdefgh" \
+                 or row_to not in range(1, 9):
+            return False, "Err: Incorrect position"
+        column_to = "abcdefgh".index(column_to.lower()) + 1
+        mapped_row_to = f"row{row_to}"
+
+        if not hasattr(self, mapped_row_to):
+            return False, "Err: Incorrect position"
+        row_to = getattr(self, mapped_row_to)
+        row_to[column_to] = None
+        return True

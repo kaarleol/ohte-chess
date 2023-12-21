@@ -1,13 +1,19 @@
 class LegalMove:
     def __init__(self, board):
         self.board = board
-        self.previous_move = ''
+        self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
+                               'takes':None, 'pawn_double_move':False, 'player':None}
+        self.previous_previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
+                               'takes':None, 'pawn_double_move':False, 'player':None}
         self.white_king_moved = False
         self.a1_rook_moved = False
         self.h1_rook_moved = False
         self.black_king_moved = False
         self.a8_rook_moved = False
         self.h8_rook_moved = False
+        self.white_king_location = 'e1'
+        self.black_king_location = 'e8'
+        self.current_turn = 'White'
 
     def legal_pos(self, move):
         if not len(move) == 2:
@@ -97,7 +103,6 @@ class LegalMove:
     def black_pawn_legal_moves(self, move_from):
         legal_moves = []
         column, row = self.board.break_move(move_from)
-
         #pawn not moved yet
         if row == 7:
             move_two_squares = self.board.move_to_direction(
@@ -137,8 +142,7 @@ class LegalMove:
         return legal_moves
 
     def knight_legal_moves(self, move_from):
-        column, row = self.board.break_move(move_from)
-        piece_color  = self.board.piece_owner(column, row)
+        piece_color  = self.current_turn
         move_tries = []
         legal_moves = []
         move_tries.append(self.board.move_to_direction(
@@ -155,7 +159,7 @@ class LegalMove:
                 self.board.move_to_direction(move_from, 'left'), 'down'), 'down'))
         move_tries.append(self.board.move_to_direction(
             self.board.move_to_direction(
-                self.board.move_to_direction(move_from, 'right'), 'rigth'), 'up'))
+                self.board.move_to_direction(move_from, 'right'), 'right'), 'up'))
         move_tries.append(self.board.move_to_direction(
             self.board.move_to_direction(
                 self.board.move_to_direction(move_from, 'left'), 'left'), 'up'))
@@ -175,8 +179,7 @@ class LegalMove:
         return legal_moves
 
     def bishop_legal_moves(self, move_from):
-        column, row = self.board.break_move(move_from)
-        piece_color = self.board.piece_owner(column, row)
+        piece_color  = self.current_turn
         legal_moves = []
         current_location = move_from
         #up-right-diagonal
@@ -246,8 +249,7 @@ class LegalMove:
         return legal_moves
 
     def rook_legal_moves(self, move_from):
-        column, row = self.board.break_move(move_from)
-        piece_color = self.board.piece_owner(column, row)
+        piece_color  = self.current_turn
         legal_moves = []
         current_location = move_from
         #right
@@ -320,7 +322,7 @@ class LegalMove:
 
     def king_legal_moves(self, move_from):
         column, row = self.board.break_move(move_from)
-        piece_color  = self.board.piece_owner(column, row)
+        piece_color  = self.current_turn
         move_tries = []
         legal_moves = []
         move_tries.append(self.board.move_to_direction(move_from, 'up'))
@@ -343,3 +345,136 @@ class LegalMove:
                     legal_moves.append(i)
 
         return legal_moves
+
+    def square_under_threat(self, square):
+        c, r = self.board.break_move(square)
+        val = self.board.location_translator(c, r)
+        if val is not None:
+            if val.islower():
+                current_player = 'Black'
+            else:
+                current_player = 'White'
+        else:
+            current_player = self.current_turn
+
+        possible_threats = []
+        #check diagonals for enemy queen or bishop
+        diagonal_threats = self.bishop_legal_moves(square)
+        for i in diagonal_threats:
+            c, r = self.board.break_move(i)
+            piece = self.board.location_translator(c, r)
+            if piece is not None:
+                if piece.isupper():
+                    owner = 'White'
+                else: 
+                    owner = 'Black'
+
+                if (piece.lower() == 'q' or piece.lower() == 'b') and owner != current_player:
+                    possible_threats.append(i)
+        #check rows & columns for enemy rook or queen
+        rooklike_threats = self.rook_legal_moves(square)
+        for i in rooklike_threats:
+            c, r = self.board.break_move(i)
+            piece = self.board.location_translator(c, r)
+            if piece is not None:
+                if piece.isupper():
+                    owner = 'White'
+                else:
+                    owner = 'Black'
+
+                if (piece.lower() == 'q' or piece.lower() == 'r') and owner != current_player:
+                    possible_threats.append(i)
+        #check for enemy knights
+        knight_threats = self.knight_legal_moves(square)
+        for i in knight_threats:
+            c, r = self.board.break_move(i)
+            piece = self.board.location_translator(c, r)
+            if piece is not None:
+                if piece.isupper():
+                    owner = 'White'
+                else:
+                    owner = 'Black'
+
+                if piece.lower() == 'n' and owner != current_player:
+                    possible_threats.append(i)
+        #check for enemy pawns
+        pawn_threats = []
+        if current_player == 'White':
+            pawn_threats.append(self.board.move_to_direction(
+                self.board.move_to_direction(square, 'right'), 'up'))
+            pawn_threats.append(self.board.move_to_direction(
+                self.board.move_to_direction(square, 'left'), 'up'))
+        else:
+            pawn_threats.append(self.board.move_to_direction(
+                self.board.move_to_direction(square, 'right'), 'down'))
+            pawn_threats.append(self.board.move_to_direction(
+                self.board.move_to_direction(square, 'left'), 'down'))
+        for i in pawn_threats:
+            c, r = self.board.break_move(i)
+            piece = self.board.location_translator(c, r)
+            if piece is not None:
+                if piece.isupper():
+                    owner = 'White'
+                else:
+                    owner = 'Black'
+
+                if piece.lower() == 'p' and owner != current_player:
+                    possible_threats.append(i)
+        print(possible_threats)
+        return len(possible_threats) > 0
+
+    def check_checker(self):
+        return self.check_checker_white(), self.check_checker_black()
+
+    def would_be_in_check(self):
+        if self.current_turn == 'White':
+            return self.check_checker_white()
+        return self.check_checker_black()
+
+    def check_checker_white(self):
+        return self.square_under_threat(self.white_king_location)
+
+    def check_checker_black(self):
+        return self.square_under_threat(self.black_king_location)
+
+    def log_move(self, move_from, move_to):
+        self.previous_previous_move = self.previous_move
+        self.previous_move['move_from'] = move_from
+        self.previous_move['move_to'] = move_to
+        column_from, row_from = self.board.break_move(move_from)
+        column_to, row_to = self.board.break_move(move_to)
+        moved_piece = self.board.location_translator(column_from, row_from)
+        if moved_piece:
+            #check for double pawn move for en passant
+            if moved_piece == 'P':
+                if self.board.move_to_direction(self.board.move_to_direction(
+                    move_from, 'up'), 'up') == move_to:
+                    self.previous_move['pawn_double_move']=True
+            elif moved_piece == 'p':
+                if self.board.move_to_direction(self.board.move_to_direction(
+                    move_from, 'down'), 'down') == move_to:
+                    self.previous_move['pawn_double_move']=True
+            else:
+                self.previous_move['pawn_double_move']=False
+            #save if king or rook moved to prevent castling in the future
+            if moved_piece == 'K':
+                self.white_king_moved = True
+            if moved_piece == 'k':
+                self.black_king_moved = True
+            if moved_piece == 'R' and move_from.lower() == 'a1':
+                self.a1_rook_moved = True
+            if moved_piece == 'R' and move_from.lower() == 'h1':
+                self.h1_rook_moved = True
+            if moved_piece == 'r' and move_from.lower() == 'a8':
+                self.a8_rook_moved = True
+            if moved_piece == 'r' and move_from.lower() == 'h8':
+                self.h8_rook_moved = True
+            self.previous_move['moved_piece'] = moved_piece
+        else:
+            return False, "Please report this error - everything is wrong"
+        self.previous_move['takes'] = self.board.location_translator(column_to, row_to)
+        self.previous_move['player'] = self.current_turn
+        return True
+
+    def go_back_log(self):
+        self.previous_move = self.previous_previous_move
