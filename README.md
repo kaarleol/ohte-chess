@@ -69,8 +69,39 @@ Poistu pelistä:
 exit
 ```
 
+Listaus komennoista:
+
+```bash
+Help
+```
+
 Peru nappulan valinta:
 
 ```bash
 cancel
 ```
+
+Uusi peli:
+
+```bash
+new
+```
+
+Tasapeli:
+
+```bash
+draw
+```
+
+Luovuta:
+
+```bash
+resign
+```
+
+Tee muutoksia lautaan pelin tilasta välittämättä:
+
+```bash
+override
+```
+
