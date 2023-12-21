@@ -2,7 +2,7 @@
 
 ## Sovelluksen tarkoitus
 
-Sovelluksen on määrä olla samalla laitteella kahden pelattava shakki. Sovellus saattaa tallentaa pelatut pelit historiaan, jos pelin toteuttaminen onnistuu nopeasti.
+Sovelluksen on määrä olla samalla laitteella kahden pelattava shakki.
 
 ## Käyttäjät
 
@@ -11,15 +11,14 @@ Koska peli on paikallisesti pelattava, erilaisille käyttäjärooleille tuskin o
 ## Perusversion tarjoama toiminnallisuus
 
 - Mahdollisuus pelin aloittamiseen ja uuteen peliin - Tehty
-- Ehkä vaihtoehdot luovuttamiseen tai tasapeliin, vaikka nämä todennäköisesti sovitaan myös kasvokkain.
-- Suurin osa pelin toteutuksesta koostunee laillisten siirtojen, linnaan menemisen, sotilaan korotuksen, ohestalyönnin, sekä shakin ja matin tarkistamiseen tarvittavien logiikoiden toteutuksesta.
-- Lisäksi peli vaatii toki logiikan pelaajien siirtojen vuorotteluun - Tehty
-- Siirrot todennäköisesti kirjataan kertomalla lähtö- ja saapumisruutu - Tehty
+- Vaihtoehdot luovuttamiseen tai tasapeliin, vaikka nämä todennäköisesti sovitaan myös kasvokkain. - Tehty
+- Shakin lailliset siirrot ja sääntöjen toteuttaminen, korottaminen, shakki, matti - Tehty
+- Logiikan pelaajien siirtojen vuorotteluun - Tehty
+- Siirtojen kirjaaminen tekstipohjaisesti - Tehty
 
 ## Jatkokehitysideoita
-
+- Graafinen käyttöliittymä - aika loppui kesken
 - Historia pelien tallentamiseksi
-- Käyttöliittymäparannuksia, etenkin hiirellä drag & drop
 - Ajastetut pelit ja mahdollisuus erilaisiin aikaformaatteihin
 - Siirtojen tallentaminen muistiin ja niiden kelaaminen läpi analysoinnin helpottamiseksi
 
