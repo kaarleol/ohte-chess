@@ -1,6 +1,6 @@
 class Board:
-    def __init__(self, ui=None):
-        self.ui = ui
+    def __init__(self, io):
+        self.io = io
         self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
                                'takes':None, 'pawn_double_move':False, 'player':None,
                                'promoted':False}
@@ -13,8 +13,6 @@ class Board:
         self.row3 = ["3|"] + [None] * 8
         self.row2 = ["2|", "P", "P", "P", "P", "P", "P", "P", "P"]
         self.row1 = ["1|", "R", "N", "B", "Q", "K", "B", "N", "R"]
-        self.bottomrow1 = ["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"]
-        self.bottomrow2 = [" |", "A", "B", "C", "D", "E", "F", "G", "H"]
         self.white_king_moved = False
         self.a1_rook_moved = False
         self.h1_rook_moved = False
@@ -31,8 +29,8 @@ class Board:
         self.draw_row(self.row3)
         self.draw_row(self.row2)
         self.draw_row(self.row1)
-        self.draw_row(self.bottomrow1)
-        self.draw_row(self.bottomrow2)
+        self.draw_row(["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"])
+        self.draw_row([" |", "A", "B", "C", "D", "E", "F", "G", "H"])
 
     def draw_row(self, row):
         newrow = []
@@ -42,7 +40,7 @@ class Board:
             if v is None:
                 newrow[i] = "_"
 
-        print(" ".join(newrow))
+        self.io.write(" ".join(newrow))
 
     def location_translator(self, column, row):
         if column and column.lower() in "abcdefgh":

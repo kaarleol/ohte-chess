@@ -366,6 +366,58 @@ class LegalMove:
                 if self.board.piece_owner(c, r) is not piece_color:
                     legal_moves.append(i)
 
+        #white castling
+        if self.current_turn == 'White' and self.previous_move['white_king_moved'] is False \
+            and self.check_checker_white() is False:
+            #castling kingside
+            if self.previous_move['h1_rook_moved'] is False:
+                val = True
+                squares = ['f1', 'g1']
+                for i in squares:
+                    c, r = self.board.break_move(i)
+                    if self.board.location_translator(c, r) is not None or \
+                          len(self.square_under_threat(i)) > 0:
+                        val = False
+                if val is True:
+                    legal_moves.append('g1')
+            #long castle
+            if self.previous_move['a1_rook_moved'] is False:
+                val = True
+                squares = ['d1', 'c1']
+                for i in squares:
+                    c, r = self.board.break_move(i)
+                    if self.board.location_translator(c, r) is not None or \
+                          len(self.square_under_threat(i)) > 0:
+                        val = False
+                if val is True:
+                    legal_moves.append('c1')
+
+        #black castling
+        if self.current_turn == 'black' and self.previous_move['black_king_moved'] is False \
+              and self.check_checker_black() is False:
+            #castling kingside
+            if self.previous_move['h8_rook_moved'] is False:
+                val = True
+                squares = ['f8', 'g8']
+                for i in squares:
+                    c, r = self.board.break_move(i)
+                    if self.board.location_translator(c, r) is not None or \
+                        len(self.square_under_threat(i)) > 0:
+                        val = False
+                if val is True:
+                    legal_moves.append('g8')
+            #long castle
+            if self.previous_move['a8_rook_moved'] is False:
+                val = True
+                squares = ['d8', 'c8']
+                for i in squares:
+                    c, r = self.board.break_move(i)
+                    if self.board.location_translator(c, r) is not None or \
+                        len(self.square_under_threat(i)) > 0:
+                        val = False
+                if val is True:
+                    legal_moves.append('c8')
+
         return legal_moves
 
     def square_under_threat(self, square, player=None):
