@@ -116,6 +116,16 @@ class Board:
         if piece == 'p' and r2 == 1:
             piece = 'q'
 
+        #castling, legality already checked
+        if piece == 'K' and move_from == 'e1' and move_to == 'g1':
+            self.move_piece('h1', 'f1', player, False)
+        if piece == 'K' and move_from == 'e1' and move_to == 'c1':
+            self.move_piece('a1', 'd1', player, False)
+        if piece == 'k' and move_from == 'e8' and move_to == 'g8':
+            self.move_piece('h8', 'f8', player, False)
+        if piece == 'k' and move_from == 'e8' and move_to == 'c8':
+            self.move_piece('a8', 'd8', player, False)
+
         row_from[column_from] = None
 
         row_to[column_to] = piece
