@@ -1,4 +1,38 @@
 class LegalMove:
+    '''
+    Class that handles the games rules and checks if moves follow them
+
+    Attributes:
+        board: connection to the game board
+        previous_move (dict): previous move for checking for en passant and 
+            if pieces have moved preventing castling
+        previous_previous_move (dict): Move before previous move in case a move is cancelled
+        white_king_location (str): keeps king's location in memory to prevent need for searching
+        black_king_location (str): keeps king's location in memory to prevent need for searching
+        current_turn (str): keeps track of current player 
+
+    Methods:
+        legal_pos(move): Is the move a real square
+        correct_player(player, move): Is the piece player tries to move theirs
+        legal_moves(move_from): Checks the piece the player is trying to move and directs
+            it to the right function for checking pieces moves
+        white_pawn_legal_moves(move_from): Calculates legal moves for a white pawn
+        black_pawn_legal_moves(move_from): Calculates legal moves for a black pawn
+        knight_legal_moves(move_from): Calculates legal moves for knights
+        bishop_legal_moves(move_from): Calculates legal moves for bishops
+        rook_legal_moves(move_from): Calculates legal moves for rooks
+        queen_legal_moves(move_from): Calculates legal moves for queens
+        king_legal_moves(move_from): Calculates legal moves for kings
+        square_under_threat(square): Calculates locations where the square is being attacked from
+        check_checker(): Checks if either player under check
+        would_be_in_check(): Check if current player would be in check
+        check_checker_white(): Check if white player in check
+        check_checker_black(): Check if black player in check
+        mate_checker(): Checks if a checkmate has been reached
+        can_piece_move(move_from, move_to): Checks if a piece can move without a check happening
+        log_move(move_from, move_to): Logs the move and updates if pieces have been moved
+        go_back_log(): Return previous move from memory if a move is cancelled        
+    '''
     def __init__(self, board):
         self.board = board
         self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
@@ -24,6 +58,14 @@ class LegalMove:
         self.current_turn = 'White'
 
     def legal_pos(self, move):
+        '''
+        Checks if a move is in a legal square
+
+        Args:
+            move (str): Checks if location is real, eg. 'a1'
+        Returns: 
+            ('a', 1) or (False, 'Err msg')
+        '''
         if not len(move) == 2:
             return False, "Err: not a legal position"
         if not move[0].lower() in "abcdefgh":
@@ -35,6 +77,14 @@ class LegalMove:
         return move[0], int(move[1])
 
     def correct_player(self, player, move):
+        '''
+            Check if the given player own the piece in the location
+        Args:
+            player (str): Player, 'Black' or 'White'
+            move (str): Location being checkd, eg 'a1'
+        Returns:
+            True or (False, 'Err msg')
+        '''
         if player is None or move == '':
             return False, "Err: missing player or move"
 
@@ -48,6 +98,13 @@ class LegalMove:
         return False, "Err: wrong player's piece or empty square"
 
     def legal_moves(self, move_from):
+        '''
+        Asks for legal moves from the right function for the piece
+        Args:
+            move_from (str): A square, eg 'a1' 
+        Returns:
+            []: List of legal moves for the piece in the square
+        '''
         column, row = self.board.break_move(move_from)
         piece = self.board.location_translator(column, row)
         if piece == 'P':
@@ -67,6 +124,13 @@ class LegalMove:
 
 
     def white_pawn_legal_moves(self, move_from):
+        '''
+        Return legal moves for the pawn in question
+        Args:
+            move_from (str): Location of the pawn, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         legal_moves = []
         column, row = self.board.break_move(move_from)
 
@@ -116,6 +180,13 @@ class LegalMove:
         return legal_moves
 
     def black_pawn_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         legal_moves = []
         column, row = self.board.break_move(move_from)
         #pawn not moved yet
@@ -153,7 +224,7 @@ class LegalMove:
                 if piece_to_the_left.isupper():
                     legal_moves.append(takes_left)
         #en passant
-        if self.previous_move['pawn_double_move'] is True and row == 5:
+        if self.previous_move['pawn_double_move'] is True and row == 4:
             move_right = self.board.move_to_direction(move_from, 'right')
             if move_right == self.previous_move['move_to']:
                 legal_moves.append(self.board.move_to_direction(move_right, 'down'))
@@ -164,6 +235,13 @@ class LegalMove:
         return legal_moves
 
     def knight_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         piece_color  = self.current_turn
         move_tries = []
         legal_moves = []
@@ -201,6 +279,13 @@ class LegalMove:
         return legal_moves
 
     def bishop_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         piece_color  = self.current_turn
         legal_moves = []
         current_location = move_from
@@ -271,6 +356,13 @@ class LegalMove:
         return legal_moves
 
     def rook_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         piece_color  = self.current_turn
         legal_moves = []
         current_location = move_from
@@ -337,12 +429,26 @@ class LegalMove:
         return legal_moves
 
     def queen_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         l1 = self.bishop_legal_moves(move_from)
         l2 = self.rook_legal_moves(move_from)
 
         return l1 + l2
 
     def king_legal_moves(self, move_from):
+        '''
+        Return legal moves for the piece in question
+        Args:
+            move_from (str): Location of the piece, eg 'a2'
+        Returns:
+            legal_moves ([]): list of legal moves for the piece
+        '''
         column, row = self.board.break_move(move_from)
         piece_color  = self.current_turn
         move_tries = []
@@ -421,6 +527,14 @@ class LegalMove:
         return legal_moves
 
     def square_under_threat(self, square, player=None):
+        '''
+        Returns the locations of where the square in question is being threatened from
+        Args:
+            square (str): Square, eg 'a1'
+            player (str): player who is being threatened (checks for enemy pieces)
+        Returns:
+            possible_threats ([]): list of where the square is being threatened from
+        '''
         c, r = self.board.break_move(square)
         val = self.board.location_translator(c, r)
         if val is not None and player is None:
@@ -499,23 +613,53 @@ class LegalMove:
         return possible_threats
 
     def check_checker(self):
+        '''
+        Checks if either player is in check
+
+        Returns:
+            True or False
+        '''
         if self.check_checker_white() or self.check_checker_black():
             return True
         return False
 
     def would_be_in_check(self):
+        '''
+        Checks if the current player is in check
+
+        Returns:
+            True or False
+        '''
         if self.current_turn == 'White':
             return self.check_checker_white()
         return self.check_checker_black()
 
     def check_checker_white(self):
+        '''
+        Checks if white is in check
+
+        Returns:
+            True or False
+        '''
         return len(self.square_under_threat(self.white_king_location)) > 0
 
     def check_checker_black(self):
+        '''
+        Checks if black is in check
+
+        Returns:
+            True or False
+        '''
         return len(self.square_under_threat(self.black_king_location)) > 0
 
     #the following is a bit complicated so some explanations
     def mate_checker(self):
+        '''
+        Checks if a mate has been reached
+
+        Returns:
+            True or False
+        '''
         if self.current_turn == 'Black':
             threats = self.square_under_threat(self.black_king_location)
             king_moves = self.king_legal_moves(self.black_king_location)
@@ -561,6 +705,15 @@ class LegalMove:
 
     #checks if a piece could move to some square without you being in check after
     def can_piece_move(self, move_from, move_to):
+        '''
+        Checks if the piece can move (True) or if it is pinned (False)
+        Args:
+            move_from (str): Square where the piece would move from, eg 'a1'
+            move_to (str): Square where the piece would mo to, eg 'a1'
+
+        Returns:
+            True or False
+        '''
         self.board.move_piece(move_from, move_to, self.current_turn, True)
         if self.current_turn == 'White':
             val = self.check_checker_white()
@@ -571,8 +724,15 @@ class LegalMove:
             self.board.go_back()
             return not val
 
-
     def log_move(self, move_from, move_to):
+        '''
+        Logs the move that was made, also som special information
+        Args:
+            move_from (str): Where the piece moved from, eg 'a1'
+            move_to (str): Where the piece moved to, eg. 'a1'
+        Returns:
+            True or (False, 'Err msg')
+        '''
         self.previous_previous_move = self.previous_move
         self.previous_move['move_from'] = move_from
         self.previous_move['move_to'] = move_to
@@ -614,4 +774,7 @@ class LegalMove:
         return True
 
     def go_back_log(self):
+        '''
+        Restores the previous move
+        '''
         self.previous_move = self.previous_previous_move

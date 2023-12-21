@@ -3,6 +3,30 @@ from board import Board
 from turn import Turn
 
 class App:
+    '''
+    Game loop, handles inputs, commands, verifies rules 
+
+    Atrributes:
+        board: connection to the Board class for saving game state and drawing the board
+        turn: connection to Turn class for keeping turncount and current player
+        io: IO for prompting for moves, printin errors
+        legality: connection to the LegalMove class for verifying rules
+        move_from (str): Saves square from prompt between loops
+        move_to (str): Saves square from prompt between loops
+        did_exit (bool): Saves exit command between loops to skip them
+        command_written: Saves if a command has been written to skip loop
+
+    
+    Methods:
+        run(): Game loop, prompts for moves, verifies moves, sends moves to Board
+            Commands: exit, resign, draw, help, new, override
+        help(): runs with 'help' command, lists commands
+        new(): runs with 'new' command. Begins a new game
+        resign(): runs with 'resign' command. End the game and prompts for a new one
+        draw(): runs with 'resign' command. End the game and prompts for a new one
+        override(): runs with 'override' command to override mistakes by the program or tests or for fun
+        mate(): mate handling when one is reached
+    '''
     def __init__(self, board, turn, io):
         self.board = board
         self.turn = turn
@@ -67,7 +91,7 @@ class App:
                 val = self.legality.correct_player(current_player, move)
                 if val is True:
                     legal_moves = self.legality.legal_moves(move)
-                    self.io.write(legal_moves)
+                    self.io.write(f'Possible moves: {legal_moves}')
                 else:
                     self.io.write(val[1])
 
@@ -137,6 +161,9 @@ class App:
                     self.turn.pass_turn()
 
     def help(self):
+        '''
+        Help. Runs with 'help' during game
+        '''
         self.io.write('Commands:')
         self.io.write('exit - closes the app')
         self.io.write('new - resets the board and begins a new game')
@@ -155,11 +182,18 @@ class App:
         self.io.write('In case of mistakes, input override command')
 
     def new(self):
-        self.board = Board()
+        '''
+        Handles creating a new game. Can be called by command 'new' 
+        or by other functions that start a new game
+        '''
+        self.board = Board(self.io)
         self.turn = Turn()
         self.legality = LegalMove(self.board)
 
     def resign(self):
+        '''
+        Resing game and prompt for a new one. Can be called by command 'resign'
+        '''
         current_player = self.turn.which_player()
         if current_player == "White":
             other_player = 'Black'
@@ -176,6 +210,9 @@ class App:
             self.did_exit = True
 
     def draw(self):
+        '''
+        Draw game and prompt for a new one. Can be called by command 'draw'
+        '''
         self.io.write('DRAW!')
 
         val = self.io.read('Would you like to start a new game (y/n)?')
@@ -186,6 +223,11 @@ class App:
             self.did_exit = True
 
     def override(self):
+        '''
+        Allow player to manually move pieces outside the rules of the game,
+        delete pieces (besides the king) or add pieces (besides the king or on king's square)
+        Called wit 'override' and prompts for further commands
+        '''
         current_player = self.turn.which_player()
         command = self.io.read("What would you like to do (move, add, delete)")
 
@@ -241,6 +283,9 @@ class App:
                 self.io.write("Incorrect symbol")
 
     def mate(self):
+        '''
+        Handles mate and end of the game
+        '''
         self.io.write('MATE!')
         if self.turn.which_player == 'White':
             self.io.write('Black wins!!')

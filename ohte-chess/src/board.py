@@ -1,10 +1,30 @@
 class Board:
+    '''
+    A class that remembers the board-state and takes care of moving pieces
+
+    Atrributes:
+        io: Some io for drawing the board-state
+        previous_move (dict): Remembers the previous move in case the move needs to be reversed
+        rows: Boardstate
+    
+    Methods:
+        draw_board(): Draws the board using a helper function and io
+        location_translator(): Returns the piece in a given square
+        piece_owner(): Return the owner of piece in a given square
+        move_piece(): Moves a piece from a square to another and takes care of special moves
+        move_to_direction(): Helper function. Returns the anjacent square to direction
+        break_move(): Helper function for breaking a square coordinate into column and row
+        log_move(): Logs the previous move in case the move needs to be reversed
+        go_back(): Reverse previous move
+        add_piece: Adds a piece to a square for testing or different game formats
+        remove_piece: Removes a piece from a square
+        
+    '''
     def __init__(self, io):
         self.io = io
         self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
                                'takes':None, 'pawn_double_move':False, 'player':None,
                                'promoted':False}
-        self.squre_sixe = 40
         self.row8 = ["8|", "r", "n", "b", "q", "k", "b", "n", "r"]
         self.row7 = ["7|", "p", "p", "p", "p", "p", "p", "p", "p"]
         self.row6 = ["6|"] + [None] * 8
@@ -13,26 +33,23 @@ class Board:
         self.row3 = ["3|"] + [None] * 8
         self.row2 = ["2|", "P", "P", "P", "P", "P", "P", "P", "P"]
         self.row1 = ["1|", "R", "N", "B", "Q", "K", "B", "N", "R"]
-        self.white_king_moved = False
-        self.a1_rook_moved = False
-        self.h1_rook_moved = False
-        self.black_king_moved = False
-        self.a8_rook_moved = False
-        self.h8_rook_moved = False
 
     def draw_board(self):
-        self.draw_row(self.row8)
-        self.draw_row(self.row7)
-        self.draw_row(self.row6)
-        self.draw_row(self.row5)
-        self.draw_row(self.row4)
-        self.draw_row(self.row3)
-        self.draw_row(self.row2)
-        self.draw_row(self.row1)
-        self.draw_row(["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"])
-        self.draw_row([" |", "A", "B", "C", "D", "E", "F", "G", "H"])
+        '''
+        Draws the board using io
+        '''
+        self.__draw_row__(self.row8)
+        self.__draw_row__(self.row7)
+        self.__draw_row__(self.row6)
+        self.__draw_row__(self.row5)
+        self.__draw_row__(self.row4)
+        self.__draw_row__(self.row3)
+        self.__draw_row__(self.row2)
+        self.__draw_row__(self.row1)
+        self.__draw_row__(["‾|", "‾", "‾", "‾", "‾", "‾", "‾", "‾", "‾"])
+        self.__draw_row__([" |", "A", "B", "C", "D", "E", "F", "G", "H"])
 
-    def draw_row(self, row):
+    def __draw_row__(self, row):
         newrow = []
         for i in row:
             newrow.append(i)
@@ -43,6 +60,16 @@ class Board:
         self.io.write(" ".join(newrow))
 
     def location_translator(self, column, row):
+        '''
+        Returns the piece in a square
+
+        Args:
+            column (str): Column of the square (abcedfgh)
+            row (int): Row of the square (1-8)
+
+        Returns:
+            Piece (KQRBNPkqrbnp), None or (False, 'Error msg')
+        '''
         if column and column.lower() in "abcdefgh":
             column = "abcdefgh".index(column.lower()) + 1
         else:
@@ -68,6 +95,16 @@ class Board:
         return False, "Err: incorrect position"
 
     def piece_owner(self, column, row):
+        '''
+        Returns the owner of the piece in a square
+
+        Args:
+            column (str): Column of the square (abcedfgh)
+            row (int): Row of the square (1-8)
+
+        Returns:
+            'Black' or 'White or (False, 'Error msg')
+        '''
         val = self.location_translator(column, row)
         if val is None:
             return False, "Err: No piece there"
@@ -82,10 +119,22 @@ class Board:
 
         return False, "Err: something went wrong with determining piece owner"
 
-    # Chatgpt: generated code asking changes to my location_translator, edited
+    # Chatgpt: generated code asking changes to my location_translator, edited heavily
     def move_piece(self, move_from, move_to, player, no_log):
+        '''
+        Moves piece from square to another and handles special moves and calls for log
+
+        Args:
+            move_from (str): Square, eg. 'a1'
+            move_to (str): Square, eg. 'a1'
+            player (str): 'Black' or 'White'
+            no_log (bool): If the move is logged or maybe a call from override
+
+        Returns:
+            True or (False, 'Error msg')
+        '''
         if no_log is False:
-            val = self.log_move(move_from, move_to, player)
+            val = self.__log_move__(move_from, move_to, player)
             if val is not True:
                 return False, 'Something very bad has happened with the log'
         column_from, row_from = move_from[0], int(move_from[1])
@@ -116,6 +165,10 @@ class Board:
         if piece == 'p' and r2 == 1:
             piece = 'q'
 
+        #en passant
+        if piece.lower() == 'p' and c1 != c2 and self.location_translator(c2, r2) is None:
+            self.remove_piece(c2+str(r1))
+
         #castling, legality already checked
         if piece == 'K' and move_from == 'e1' and move_to == 'g1':
             self.move_piece('h1', 'f1', player, False)
@@ -134,6 +187,17 @@ class Board:
     # generated code ends
 
     def move_to_direction(self, move_from, direction):
+        '''
+        Returns adjacent square in direction
+        Could have been broken up but I ran out of time for refactoring
+
+        Args:
+            move_from (str): Square, eg. 'a1'
+            direction (str): 'up' or 'down' or 'right' or 'left
+            
+        Returns:
+            square (str) or (False, 'Err msg')
+        '''
         if move_from[0] is not False:
             column_from, row_from = move_from[0], int(move_from[1])
         else:
@@ -171,12 +235,28 @@ class Board:
         return False, f"Error moving the piece {direction}"
 
     def break_move(self, move):
+        '''
+        Returns column and row of the suare
+
+        Args:
+            move (str): Square, eg. 'a1'
+        Returns:
+            'a', 1
+        '''
         return move[0], int(move[1])
 
-    def combine_move(self, column, row):
-        return column + str(row)
+    def __log_move__(self, move_from, move_to, current_turn):
+        '''
+        Updated the previous move to memory
 
-    def log_move(self, move_from, move_to, current_turn):
+        Args:
+            move_from (str): Square, eg. 'a1'
+            move_to (str): Square, eg. 'a1'
+            current_turn (str): player, 'white' or 'black'
+            
+        Returns:
+            True or (False, 'Err msg')
+        '''
         self.previous_move['move_from'] = move_from
         self.previous_move['move_to'] = move_to
         column_from, row_from = self.break_move(move_from)
@@ -198,19 +278,6 @@ class Board:
                     self.previous_move['promoted'] = True
             else:
                 self.previous_move['pawn_double_move']=False
-            #save if king or rook moved to prevent castling
-            if moved_piece == 'K':
-                self.white_king_moved = True
-            if moved_piece == 'k':
-                self.black_king_moved = True
-            if moved_piece == 'R' and move_from.lower() == 'a1':
-                self.a1_rook_moved = True
-            if moved_piece == 'R' and move_from.lower() == 'h1':
-                self.h1_rook_moved = True
-            if moved_piece == 'r' and move_from.lower() == 'a8':
-                self.a8_rook_moved = True
-            if moved_piece == 'r' and move_from.lower() == 'h8':
-                self.h8_rook_moved = True
             self.previous_move['moved_piece'] = moved_piece
         else:
             return False, "Please report this error - everything is wrong"
@@ -219,6 +286,12 @@ class Board:
         return True
 
     def go_back(self):
+        '''
+        Cancels the previous move using memory
+            
+        Returns:
+            Nothing or (False, 'Err msg')
+        '''
         val = self.move_piece(self.previous_move['move_to'],
                          self.previous_move['move_from'], self.previous_move['player'], True)
         if val is not True:
@@ -229,6 +302,16 @@ class Board:
             self.add_piece(self.previous_move['move_from'], 'p')
 
     def add_piece(self, square, piece):
+        '''
+        Adds any piece besides kings to square
+
+        Args:
+            square (str): Square, eg. 'a1'
+            piece (str): Piece, 'QRBNPqrbnp'
+            
+        Returns:
+            True or (False, 'Err msg')
+        '''
         column_to, row_to = self.break_move(square)
         if  column_to.lower() not in "abcdefgh" \
                  or row_to not in range(1, 9):
@@ -243,6 +326,14 @@ class Board:
         return True
 
     def remove_piece(self, square):
+        '''
+        Removes piece prom square
+
+        Args:
+            square (str): Square, eg. 'a1'  
+        Returns:
+            True or (False, 'Err msg')
+        '''
         column_to, row_to = self.break_move(square)
         if  column_to.lower() not in "abcdefgh" \
                  or row_to not in range(1, 9):
@@ -255,9 +346,3 @@ class Board:
         row_to = getattr(self, mapped_row_to)
         row_to[column_to] = None
         return True
-
-    def promote_white(self, moved_to):
-        self.add_piece(moved_to, 'Q')
-
-    def promote_black(self, moved_to):
-        self.add_piece(moved_to, 'q')
