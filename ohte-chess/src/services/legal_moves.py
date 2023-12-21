@@ -368,14 +368,16 @@ class LegalMove:
 
         return legal_moves
 
-    def square_under_threat(self, square):
+    def square_under_threat(self, square, player=None):
         c, r = self.board.break_move(square)
         val = self.board.location_translator(c, r)
-        if val is not None:
+        if val is not None and player is None:
             if val.islower():
                 current_player = 'Black'
             else:
                 current_player = 'White'
+        elif player is not None:
+            current_player = player
         else:
             current_player = self.current_turn
 
@@ -442,11 +444,12 @@ class LegalMove:
 
                 if piece.lower() == 'p' and owner != current_player:
                     possible_threats.append(i)
-        print(possible_threats)
-        return len(possible_threats) > 0
+        return possible_threats
 
     def check_checker(self):
-        return self.check_checker_white(), self.check_checker_black()
+        if self.check_checker_white() or self.check_checker_black():
+            return True
+        return False
 
     def would_be_in_check(self):
         if self.current_turn == 'White':
@@ -454,10 +457,68 @@ class LegalMove:
         return self.check_checker_black()
 
     def check_checker_white(self):
-        return self.square_under_threat(self.white_king_location)
+        return len(self.square_under_threat(self.white_king_location)) > 0
 
     def check_checker_black(self):
-        return self.square_under_threat(self.black_king_location)
+        return len(self.square_under_threat(self.black_king_location)) > 0
+
+    #the following is a bit complicated so some explanations
+    def mate_checker(self):
+        if self.current_turn == 'Black':
+            threats = self.square_under_threat(self.black_king_location)
+            king_moves = self.king_legal_moves(self.black_king_location)
+            king_location = self.black_king_location
+            threatening_player = "White"
+        if self.current_turn == 'White':
+            threats = self.square_under_threat(self.white_king_location)
+            king_moves = self.king_legal_moves(self.white_king_location)
+            king_location = self.white_king_location
+            threatening_player = 'Black'
+        #check if king can escape
+        for i in king_moves:
+            if not self.square_under_threat(i, self.current_turn):
+                return False
+        #just making sure there are no duplicates
+        unique_threats = []
+        for item in threats:
+            if item not in unique_threats:
+                unique_threats.append(item)
+        #check if the attacker can be taken
+        #if there are more than one threat(double check) taking won't help
+        if len(unique_threats) == 1:
+            threats = self.square_under_threat(unique_threats[0])
+            for i in threats:
+                if self.can_piece_move(i, unique_threats[0]):
+                    return False
+        #check if the treats are blockable (not a knight or multiple attackers)
+        if len(unique_threats) == 1:
+            #couldn't take and cannot block a knight so mate
+            if unique_threats[0].lower() == 'n':
+                return True
+            #squares that could remove the check if blocked
+            possible_blockable_squares = self.queen_legal_moves(king_location)
+            for i in possible_blockable_squares:
+                #can one of your pieces make it to that square
+                can_a_piece_block = self.square_under_threat(i, threatening_player)
+                #can the piece move or is it pinned
+                for j in can_a_piece_block:
+                    #if one move is found, not a mate
+                    if self.can_piece_move(j, i):
+                        return False
+        return True
+
+    #checks if a piece could move to some square without you being in check after
+    def can_piece_move(self, move_from, move_to):
+        self.board.move_piece(move_from, move_to, self.current_turn, True)
+        if self.current_turn == 'White':
+            val = self.check_checker_white()
+            self.board.go_back()
+            return not val
+        if self.current_turn == 'Black':
+            val = self.check_checker_white()
+            self.board.go_back()
+            return not val
+
 
     def log_move(self, move_from, move_to):
         self.previous_previous_move = self.previous_move
@@ -481,8 +542,10 @@ class LegalMove:
             #save if king or rook moved to prevent castling in the future
             if moved_piece == 'K':
                 self.previous_move['white_king_moved'] = True
+                self.white_king_location = move_to
             if moved_piece == 'k':
                 self.previous_move['black_king_moved'] = True
+                self.black_king_location = move_to
             if moved_piece == 'R' and move_from.lower() == 'a1':
                 self.previous_move['a1_rook_moved'] = True
             if moved_piece == 'R' and move_from.lower() == 'h1':

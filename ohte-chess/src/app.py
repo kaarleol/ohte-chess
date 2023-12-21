@@ -24,12 +24,16 @@ class App:
             self.io.write("")
             self.io.write(f"{current_player}'s move")
             legal_moves = []
-
-
             did_cancel = False
+
             val = self.legality.check_checker()
             if val is True:
                 self.io.write('Check!')
+                val = self.legality.mate_checker()
+                if val is True:
+                    self.mate()
+                    self.did_exit = True
+                    break
 
             while True:
                 move = self.io.read(
@@ -63,7 +67,7 @@ class App:
                 val = self.legality.correct_player(current_player, move)
                 if val is True:
                     legal_moves = self.legality.legal_moves(move)
-                    print(legal_moves)
+                    self.io.write(legal_moves)
                 else:
                     self.io.write(val[1])
 
@@ -235,3 +239,17 @@ class App:
                     self.io.write("Cannot delete kings")
             else:
                 self.io.write("Incorrect symbol")
+
+    def mate(self):
+        self.io.write('MATE!')
+        if self.turn.which_player == 'White':
+            self.io.write('Black wins!!')
+        else:
+            self.io.write('White wins!!')
+
+        val = self.io.read('Would you like to start a new game (y/n)?')
+        if val.lower() == 'y':
+            self.new()
+        else:
+            self.io.write('Closing the game')
+            self.did_exit = True
