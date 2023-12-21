@@ -2,15 +2,23 @@ class LegalMove:
     def __init__(self, board):
         self.board = board
         self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
-                               'takes':None, 'pawn_double_move':False, 'player':None}
+                               'takes':None, 'pawn_double_move':False, 
+                               'player':None,
+                               'white_king_moved':False,
+                               'a1_rook_moved':False,
+                               'h1_rook_moved':False,
+                               'black_king_moved':False, 
+                               'a8_rook_moved':False, 
+                               'h8_rook_moved':False }
         self.previous_previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
-                               'takes':None, 'pawn_double_move':False, 'player':None}
-        self.white_king_moved = False
-        self.a1_rook_moved = False
-        self.h1_rook_moved = False
-        self.black_king_moved = False
-        self.a8_rook_moved = False
-        self.h8_rook_moved = False
+                               'takes':None, 'pawn_double_move':False,
+                               'player':None,
+                               'white_king_moved':False, 
+                               'a1_rook_moved':False, 
+                               'h1_rook_moved':False,
+                               'black_king_moved':False, 
+                               'a8_rook_moved':False, 
+                               'h8_rook_moved':False }
         self.white_king_location = 'e1'
         self.black_king_location = 'e8'
         self.current_turn = 'White'
@@ -96,7 +104,14 @@ class LegalMove:
             if piece_to_the_left is not None:
                 if piece_to_the_left.islower():
                     legal_moves.append(takes_left)
-        #en passant, promotion tba
+        #en passant
+        if self.previous_move['pawn_double_move'] is True and row == 5:
+            move_right = self.board.move_to_direction(move_from, 'right')
+            if move_right == self.previous_move['move_to']:
+                legal_moves.append(self.board.move_to_direction(move_right, 'up'))
+            move_left = self.board.move_to_direction(move_from, 'left')
+            if move_left == self.previous_move['move_to']:
+                legal_moves.append(self.board.move_to_direction(move_left, 'up'))
 
         return legal_moves
 
@@ -137,7 +152,14 @@ class LegalMove:
             if piece_to_the_left is not None:
                 if piece_to_the_left.isupper():
                     legal_moves.append(takes_left)
-        #en passant, promotion tba
+        #en passant
+        if self.previous_move['pawn_double_move'] is True and row == 5:
+            move_right = self.board.move_to_direction(move_from, 'right')
+            if move_right == self.previous_move['move_to']:
+                legal_moves.append(self.board.move_to_direction(move_right, 'down'))
+            move_left = self.board.move_to_direction(move_from, 'left')
+            if move_left == self.previous_move['move_to']:
+                legal_moves.append(self.board.move_to_direction(move_left, 'down'))
 
         return legal_moves
 
@@ -458,17 +480,17 @@ class LegalMove:
                 self.previous_move['pawn_double_move']=False
             #save if king or rook moved to prevent castling in the future
             if moved_piece == 'K':
-                self.white_king_moved = True
+                self.previous_move['white_king_moved'] = True
             if moved_piece == 'k':
-                self.black_king_moved = True
+                self.previous_move['black_king_moved'] = True
             if moved_piece == 'R' and move_from.lower() == 'a1':
-                self.a1_rook_moved = True
+                self.previous_move['a1_rook_moved'] = True
             if moved_piece == 'R' and move_from.lower() == 'h1':
-                self.h1_rook_moved = True
+                self.previous_move['h1_rook_moved'] = True
             if moved_piece == 'r' and move_from.lower() == 'a8':
-                self.a8_rook_moved = True
+                self.previous_move['a8_rook_moved'] = True
             if moved_piece == 'r' and move_from.lower() == 'h8':
-                self.h8_rook_moved = True
+                self.previous_move['h8_rook_moved'] = True
             self.previous_move['moved_piece'] = moved_piece
         else:
             return False, "Please report this error - everything is wrong"

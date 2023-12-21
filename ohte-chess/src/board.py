@@ -2,7 +2,8 @@ class Board:
     def __init__(self, ui=None):
         self.ui = ui
         self.previous_move = {'move_from':'', 'move_to':'', 'moved_piece':'',
-                               'takes':None, 'pawn_double_move':False, 'player':None}
+                               'takes':None, 'pawn_double_move':False, 'player':None,
+                               'promoted':False}
         self.squre_sixe = 40
         self.row8 = ["8|", "r", "n", "b", "q", "k", "b", "n", "r"]
         self.row7 = ["7|", "p", "p", "p", "p", "p", "p", "p", "p"]
@@ -108,7 +109,15 @@ class Board:
         row_from = getattr(self, mapped_row_from)
         row_to = getattr(self, mapped_row_to)
 
-        piece = row_from[column_from]
+        #auto-promote to queen
+        c1, r1 = self.break_move(move_from)
+        piece = self.location_translator(c1, r1)
+        c2, r2 = self.break_move(move_to)
+        if piece == 'P' and r2 == 8:
+            piece = 'Q'
+        if piece == 'p' and r2 == 1:
+            piece = 'q'
+
         row_from[column_from] = None
 
         row_to[column_to] = piece
@@ -171,10 +180,14 @@ class Board:
                 if self.move_to_direction(self.move_to_direction(
                     move_from, 'up'), 'up') == move_to:
                     self.previous_move['pawn_double_move']=True
+                if row_to == 8:
+                    self.previous_move['promoted'] = True
             elif moved_piece == 'p':
                 if self.move_to_direction(self.move_to_direction(
                     move_from, 'down'), 'down') == move_to:
                     self.previous_move['pawn_double_move']=True
+                if row_to == 1:
+                    self.previous_move['promoted'] = True
             else:
                 self.previous_move['pawn_double_move']=False
             #save if king or rook moved to prevent castling
@@ -204,6 +217,8 @@ class Board:
             return val
         if self.previous_move['takes'] is not None:
             self.add_piece(self.previous_move['move_to'], self.previous_move['takes'])
+        if self.previous_move['promoted'] is True:
+            self.add_piece(self.previous_move['move_from'], 'p')
 
     def add_piece(self, square, piece):
         column_to, row_to = self.break_move(square)
@@ -232,3 +247,9 @@ class Board:
         row_to = getattr(self, mapped_row_to)
         row_to[column_to] = None
         return True
+
+    def promote_white(self, moved_to):
+        self.add_piece(moved_to, 'Q')
+
+    def promote_black(self, moved_to):
+        self.add_piece(moved_to, 'q')
