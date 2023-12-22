@@ -35,8 +35,8 @@ class App:
         self.io = io
         self.legality = LegalMove(self.board)
 
-        self.move_from = None
-        self.move_to = None
+        self.move_from = 'i9'
+        self.move_to = 'i9'
         self.did_exit = False
         self.command_written = False
 
@@ -57,8 +57,8 @@ class App:
                 self.io.write('Check!')
                 val = self.legality.mate_checker()
                 if val is True:
+                    self.command_written = True
                     self.mate()
-                    self.did_exit = True
                     break
 
             while True:
@@ -115,21 +115,27 @@ class App:
                     self.did_exit = True
                     break
                 if move == 'cancel':
+                    self.io.write('CANCELLED!')
                     did_cancel = True
                     break
                 elif move == "resign":
+                    self.command_written = True
                     self.resign()
                     break
                 elif move == "new":
+                    self.command_written = True
                     self.new()
                     break
                 elif move == "draw":
+                    self.command_written = True
                     self.draw()
                     break
                 elif move == "help":
+                    self.command_written = True
                     self.help()
                     break
                 elif move == "override":
+                    self.command_written = True
                     self.override()
                     break
 
@@ -162,6 +168,9 @@ class App:
                 else:
                     self.turn.pass_turn()
 
+            self.command_written = False
+            self.did_exit = False
+
     def help(self):
         '''
         Help. Runs with 'help' during game
@@ -188,9 +197,16 @@ class App:
         Handles creating a new game. Can be called by command 'new' 
         or by other functions that start a new game
         '''
+        self.io.write('Starting a new game!')
+        self.move_from = 'i9'
+        self.move_to = 'i9'
+        self.did_exit = False
+        self.command_written = False
         self.board = Board(self.io)
         self.turn = Turn()
         self.legality = LegalMove(self.board)
+        self.run()
+
 
     def resign(self):
         '''
@@ -252,22 +268,25 @@ class App:
         if command == 'add':
             square = self.io.read("Give the square you would like to add a piece to:")
             c, r = self.legality.legal_pos(square)
-            piece = self.board.location_translator(c, r)
-            if piece is None or piece.lower() != 'k':
-                if c is not False:
-                    piece = self.io.read("Enter the piece's symbol (QRBNPqrbnp):")
-                    if piece in "QRBNPqrbnp":
-                        val = self.board.add_piece(square, piece)
-                        if val:
-                            self.io.write("ADDED!")
+            if c is not False:
+                piece = self.board.location_translator(c, r)
+                if piece is None or piece.lower() != 'k':
+                    if c is not False:
+                        piece = self.io.read("Enter the piece's symbol (QRBNPqrbnp):")
+                        if piece in "QRBNPqrbnp":
+                            val = self.board.add_piece(square, piece)
+                            if val:
+                                self.io.write("ADDED!")
+                            else:
+                                self.io.write("Something went wrong. Aborting")
                         else:
-                            self.io.write("Something went wrong. Aborting")
+                            self.io.write("Incorrect symbol")
                     else:
-                        self.io.write("Incorrect symbol")
+                        self.io.write("Incorrect square")
                 else:
-                    self.io.write("Incorrect sqaure")
+                    self.io.write("Cannot overwrite kings")
             else:
-                self.io.write("Cannot overwrite kings")
+                self.io.write("Incorrect square")
         if command == 'delete':
             square = self.io.read("Give the square you would like to empty:")
             c, r = self.legality.legal_pos(square)
@@ -294,8 +313,8 @@ class App:
         else:
             self.io.write('White wins!!')
 
-        val = self.io.read('Would you like to start a new game (y/n)?')
-        if val.lower() == 'y':
+        val1 = self.io.read('Would you like to start a new game (y/n)?')
+        if val1.lower() == 'y':
             self.new()
         else:
             self.io.write('Closing the game')
