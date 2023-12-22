@@ -10,7 +10,7 @@ Harjoitustyön aihe on kahden henkilön pelattava shakki. Tällä hetkellä sove
 
 [Changelog](https://github.com/kaarleol/ohte-chess/blob/main/dokumentaatio/changelog.md)
 
-[Uusin release](https://github.com/kaarleol/ohte-chess/releases/tag/viikko5)
+[Uusin release](https://github.com/kaarleol/ohte-chess/releases/tag/1.0.0))
 ## Asennus
 
 1. Asenna riippuvuudet ohte-chess-kansiossa komennolla:
