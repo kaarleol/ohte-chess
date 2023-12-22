@@ -2,8 +2,27 @@
 
 Ohjelmaa on testattu sitä kehittäessä etenkin manuaalisesti tapahtunein järjestelmätason testein. Yksikkö- ja integraatiotestit jäivät vähän viimetippaan mutta niitäkin on tehty.
 
+## Yksikkö- ja integraatiotestaus
 
+### Sovelluslogiikka
 
+Gameloopista vastaava App testataan TestApp-luokalla. Testaus on toteutettu suurimmaksiosin integraatiotestauksena oikeilla luokilla poislukien IO:n josta tehtiin Mock-olio. Lisäksi luokan sisäisten funktioiden haaraumia on testattu yksikkötestauksella samaisessa testiluokassa
+
+### Palvelut
+
+Palveluluokkien Board, LegalMove ja Turn testaus on enimmäkseen toteutettu osana integraatiotestausta App-luokasta. 
+
+Turn on myös yksikkötestattu omalla testiluokalla TestTurn
+
+Myös Board-luokalle on tehty muutama yksikkötesti TestBoard-luokkaan mutta suurin osa testauksesta koostuu integraatiotestauksesta
+
+### Testikattavuus
+
+IO poisluettuna testauksen haaraumakattavuus on 89%
+
+<img width="556" alt="image" src="https://github.com/kaarleol/ohte-chess/assets/127772376/7f390d64-0c24-448b-aa4a-cea3732d4aca">
+
+IO jätettiin pois, sillä se koostui käytännössä vain print- ja input-komennoista. Lisäksi käyttäjälle olisi erittäin selvää jos tulostusta ei tapahtuisi.
 
 ## Järjestelmätestaus
 
