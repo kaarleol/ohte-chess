@@ -72,7 +72,7 @@ exit
 Listaus komennoista:
 
 ```bash
-Help
+help
 ```
 
 Peru nappulan valinta:
