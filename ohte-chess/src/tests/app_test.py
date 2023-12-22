@@ -247,7 +247,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(self.test_app.did_exit, True)
 
     def test_app_help_during_move_to(self):
-        self.test_app.io.read = MagicMock(side_effect=['a1', 'help', 'exit'])
+        self.test_app.io.read = MagicMock(side_effect=['a2', 'help', 'exit'])
         self.test_app.run()
 
         expected_write_calls = [
@@ -348,7 +348,7 @@ class TestApp(unittest.TestCase):
         self.test_app.run()
 
         expected_write_calls = [
-        call('Incorrect square')
+        call('Incorrect or empty square')
         ]
         self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
         self.assertEqual(self.test_app.did_exit, True)
@@ -391,6 +391,209 @@ class TestApp(unittest.TestCase):
 
         expected_write_calls = [
         call('Incorrect square')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_app_black_mates(self):
+        self.test_app.io.read = MagicMock(side_effect=['a2', 'a4', 'override', 'move', 'd8', 'f7', 'override', 'move', 'a8', 'f8', 'f7', 'f2', 'n'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('MATE!')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_pawn_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['a2', 'b3', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_pawn_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['a2', 'a3', 'a7', 'b6', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    
+    def test_white_knight_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['b1', 'b3','exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    
+    def test_black_knight_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['a2', 'a3', 'b8', 'b6', 'exit'])
+        self.test_app.run()
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+        
+    def test_white_bishop_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'b7', 'b6', 'c1', 'd3', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_bishop_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'd7', 'd6', 'c1', 'd2', 'c8','d6', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_queen_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'b7', 'b6', 'd1', 'd3', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_queen_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'd7', 'd6', 'd1', 'd2', 'd8','d6', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_king_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'b7', 'b6', 'e1', 'e3', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_king_illegal_move(self):
+        self.test_app.io.read = MagicMock(side_effect=['d2', 'd3', 'd7', 'd6', 'd1', 'd2', 'e8','e6', 'exit'])
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('Not a legal move for that piece')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_king_castle_kingside(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'delete', 'f1', 'override', 'delete', 'g1', 'e1', 'g1', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('g', 1), 'K')
+        self.assertEqual(self.test_app.board.location_translator('f', 1), 'R')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_king_castle_long(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'delete', 'd1', 'override', 'delete', 'c1', 'override', 'delete', 'b1', 'e1', 'c1', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('c', 1), 'K')
+        self.assertEqual(self.test_app.board.location_translator('d', 1), 'R')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_king_castle_long(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'delete', 'd8', 'override', 'delete', 'c8', 'override', 'delete', 'b8', 'a2', 'a3','e8', 'c8', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('c', 8), 'k')
+        self.assertEqual(self.test_app.board.location_translator('d', 8), 'r')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_king_castle_kingside(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'delete', 'f8', 'override', 'delete', 'g8', 'a2', 'a3', 'e8', 'g8', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('g', 8), 'k')
+        self.assertEqual(self.test_app.board.location_translator('f', 8), 'r')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_promote(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'move', 'a2', 'a7', 'a7', 'b8', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('b', 8), 'Q')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_promote(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'move', 'a7', 'a2', 'b2', 'b3', 'a2', 'b1', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('b', 1), 'q')
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_white_en_passant(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'move', 'a2', 'a4', 'a4', 'a5', 'b7', 'b5', 'a5', 'b6', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('b', 6), 'P')
+        self.assertEqual(self.test_app.board.location_translator('b', 5), None)
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_black_en_passant(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'move', 'a7', 'a4', 'b2', 'b4', 'a4', 'b3', 'exit'])
+        self.test_app.run()
+
+        self.assertEqual(self.test_app.board.location_translator('b', 3), 'p')
+        self.assertEqual(self.test_app.board.location_translator('b', 4), None)
+
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_different_type_of_mate(self):
+        self.test_app.io.read = MagicMock(side_effect=['override', 'move', 'd1', 'd3', 'override', 'move', 'h8', 'g8', 'override', 'move', 'e8', 'h7', 'd3', 'f3', 'h7','h8', 'f3', 'h3', 'exit'])
+
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('MATE!')
+        ]
+        self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
+        self.assertEqual(self.test_app.did_exit, True)
+
+    def test_one_more_mate(self):
+        self.test_app.io.read = MagicMock(side_effect=['f2', 'f3', 'e7', 'e6', 'g2','g4','d8','h4', 'exit'])
+
+        self.test_app.run()
+
+        expected_write_calls = [
+        call('MATE!')
         ]
         self.test_app.io.write.assert_has_calls(expected_write_calls, any_order=True)
         self.assertEqual(self.test_app.did_exit, True)

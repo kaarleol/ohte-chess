@@ -146,7 +146,8 @@ class App:
                         break
                     else:
                         self.io.write('Not a legal move for that piece')
-                self.io.write(val[1])
+                else:
+                    self.io.write(val[1])
 
             if self.did_exit is True:
                 break
@@ -251,8 +252,8 @@ class App:
 
         if command == 'move':
             move_from = self.io.read("Give the square you would like to move from:")
-            val = self.legality.legal_pos(move_from)
-            if val[0] is not False:
+            c, r = self.legality.legal_pos(move_from)
+            if c is not False and self.board.location_translator(c, r) is not None:
                 move_to = self.io.read("Give the square you would like to move to:")
                 val = self.legality.legal_pos(move_to)
                 if val[0] is not False:
@@ -264,7 +265,7 @@ class App:
                 else:
                     self.io.write("Incorrect square")
             else:
-                self.io.write("Incorrect square")
+                self.io.write("Incorrect or empty square")
         if command == 'add':
             square = self.io.read("Give the square you would like to add a piece to:")
             c, r = self.legality.legal_pos(square)
@@ -308,7 +309,7 @@ class App:
         Handles mate and end of the game
         '''
         self.io.write('MATE!')
-        if self.turn.which_player == 'White':
+        if self.turn.which_player() == 'White':
             self.io.write('Black wins!!')
         else:
             self.io.write('White wins!!')

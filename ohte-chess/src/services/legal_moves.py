@@ -68,6 +68,8 @@ class LegalMove:
         '''
         if not len(move) == 2:
             return False, "Err: not a legal position"
+        if move[0] is False:
+            return False, "Errm not a legal position"
         if not move[0].lower() in "abcdefgh":
             return False, "Err: not a legal position"
         if not move[1].isdigit():
@@ -449,8 +451,17 @@ class LegalMove:
         Returns:
             legal_moves ([]): list of legal moves for the piece
         '''
-        column, row = self.board.break_move(move_from)
-        piece_color  = self.current_turn
+        column, row = self.legal_pos(move_from)
+        if column is not False:
+            if self.board.location_translator(column, row) is not None:
+                if self.board.location_translator(column, row).islower():
+                    piece_color  = 'Black'
+                else:
+                    piece_color = 'White'
+            else:
+                piece_color = self.current_turn
+        else:
+            piece_color = self.current_turn
         move_tries = []
         legal_moves = []
         move_tries.append(self.board.move_to_direction(move_from, 'up'))
@@ -458,7 +469,7 @@ class LegalMove:
         move_tries.append(self.board.move_to_direction(move_from, 'right'))
         move_tries.append(self.board.move_to_direction(move_from, 'left'))
         move_tries.append(self.board.move_to_direction(
-            self.board.move_to_direction(move_from, 'rigth'), 'up'))
+            self.board.move_to_direction(move_from, 'right'), 'up'))
         move_tries.append(self.board.move_to_direction(
             self.board.move_to_direction(move_from, 'left'), 'up'))
         move_tries.append(self.board.move_to_direction(
@@ -499,7 +510,7 @@ class LegalMove:
                     legal_moves.append('c1')
 
         #black castling
-        if self.current_turn == 'black' and self.previous_move['black_king_moved'] is False \
+        if self.current_turn == 'Black' and self.previous_move['black_king_moved'] is False \
               and self.check_checker_black() is False:
             #castling kingside
             if self.previous_move['h8_rook_moved'] is False:
@@ -535,8 +546,12 @@ class LegalMove:
         Returns:
             possible_threats ([]): list of where the square is being threatened from
         '''
-        c, r = self.board.break_move(square)
+        c, r = self.legal_pos(square)
+        if c is False:
+            return False, 'Not a legal position'
+        
         val = self.board.location_translator(c, r)
+        piece = val
         if val is not None and player is None:
             if val.islower():
                 current_player = 'Black'
@@ -551,8 +566,11 @@ class LegalMove:
         #check diagonals for enemy queen or bishop
         diagonal_threats = self.bishop_legal_moves(square)
         for i in diagonal_threats:
-            c, r = self.board.break_move(i)
-            piece = self.board.location_translator(c, r)
+            c, r = self.legal_pos(i)
+            if c is not False:
+                piece = self.board.location_translator(c, r)
+            else:
+                piece = None
             if piece is not None:
                 if piece.isupper():
                     owner = 'White'
@@ -564,8 +582,11 @@ class LegalMove:
         #check rows & columns for enemy rook or queen
         rooklike_threats = self.rook_legal_moves(square)
         for i in rooklike_threats:
-            c, r = self.board.break_move(i)
-            piece = self.board.location_translator(c, r)
+            c, r = self.legal_pos(i)
+            if c is not False:
+                piece = self.board.location_translator(c, r)
+            else:
+                piece = None
             if piece is not None:
                 if piece.isupper():
                     owner = 'White'
@@ -577,8 +598,11 @@ class LegalMove:
         #check for enemy knights
         knight_threats = self.knight_legal_moves(square)
         for i in knight_threats:
-            c, r = self.board.break_move(i)
-            piece = self.board.location_translator(c, r)
+            c, r = self.legal_pos(i)
+            if c is not False:
+                piece = self.board.location_translator(c, r)
+            else:
+                piece = None
             if piece is not None:
                 if piece.isupper():
                     owner = 'White'
@@ -589,27 +613,31 @@ class LegalMove:
                     possible_threats.append(i)
         #check for enemy pawns
         pawn_threats = []
-        if current_player == 'White':
-            pawn_threats.append(self.board.move_to_direction(
-                self.board.move_to_direction(square, 'right'), 'up'))
-            pawn_threats.append(self.board.move_to_direction(
-                self.board.move_to_direction(square, 'left'), 'up'))
-        else:
-            pawn_threats.append(self.board.move_to_direction(
-                self.board.move_to_direction(square, 'right'), 'down'))
-            pawn_threats.append(self.board.move_to_direction(
-                self.board.move_to_direction(square, 'left'), 'down'))
-        for i in pawn_threats:
-            c, r = self.board.break_move(i)
-            piece = self.board.location_translator(c, r)
-            if piece is not None:
-                if piece.isupper():
-                    owner = 'White'
+        if piece is not None:
+            if current_player == 'White':
+                pawn_threats.append(self.board.move_to_direction(
+                    self.board.move_to_direction(square, 'right'), 'up'))
+                pawn_threats.append(self.board.move_to_direction(
+                    self.board.move_to_direction(square, 'left'), 'up'))
+            else:
+                pawn_threats.append(self.board.move_to_direction(
+                    self.board.move_to_direction(square, 'right'), 'down'))
+                pawn_threats.append(self.board.move_to_direction(
+                    self.board.move_to_direction(square, 'left'), 'down'))
+            for i in pawn_threats:
+                c, r = self.legal_pos(i)
+                if c is not False:
+                    piece = self.board.location_translator(c, r)
                 else:
-                    owner = 'Black'
+                    piece = None
+                if piece is not None:
+                    if piece.isupper():
+                        owner = 'White'
+                    else:
+                        owner = 'Black'
 
-                if piece.lower() == 'p' and owner != current_player:
-                    possible_threats.append(i)
+                    if piece.lower() == 'p' and owner != current_player:
+                        possible_threats.append(i)
         return possible_threats
 
     def check_checker(self):
@@ -672,10 +700,11 @@ class LegalMove:
             threatening_player = 'Black'
         #check if king can escape
         for i in king_moves:
-            if not self.square_under_threat(i, self.current_turn):
+            if len(self.square_under_threat(i, self.current_turn)) == 0:
                 return False
         #just making sure there are no duplicates
         unique_threats = []
+        print(unique_threats)
         for item in threats:
             if item not in unique_threats:
                 unique_threats.append(item)
@@ -689,17 +718,18 @@ class LegalMove:
         #check if the treats are blockable (not a knight or multiple attackers)
         if len(unique_threats) == 1:
             #couldn't take and cannot block a knight so mate
-            if unique_threats[0].lower() == 'n':
+            c, r = self.legal_pos(unique_threats[0])
+            if self.board.location_translator(c,r).lower() == 'n':
                 return True
             #squares that could remove the check if blocked
             possible_blockable_squares = self.queen_legal_moves(king_location)
             for i in possible_blockable_squares:
                 #can one of your pieces make it to that square
                 can_a_piece_block = self.square_under_threat(i, threatening_player)
-                #can the piece move or is it pinned
                 for j in can_a_piece_block:
                     #if one move is found, not a mate
                     if self.can_piece_move(j, i):
+                        print(j,i)
                         return False
         return True
 
@@ -714,13 +744,13 @@ class LegalMove:
         Returns:
             True or False
         '''
-        self.board.move_piece(move_from, move_to, self.current_turn, True)
+        self.board.move_piece(move_from, move_to, self.current_turn, False)
         if self.current_turn == 'White':
             val = self.check_checker_white()
             self.board.go_back()
             return not val
         if self.current_turn == 'Black':
-            val = self.check_checker_white()
+            val = self.check_checker_black()
             self.board.go_back()
             return not val
 
