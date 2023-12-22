@@ -9,5 +9,6 @@
 | 12.12 | 3  | Code review |
 | 20.12 | 4  | Siirtojen määrittely nappuloille|
 | 21.12 | 7  | Erikoissirtojen logiikkaa, tunnistus shakille ja matille, käyttöliittymäkomentoja, dokumentaatiota|
-| **Total** | **23.5**  | |
+| 22.12 | 9  | Dokumentaatio, bug fixejä, valtavasti testejä|
+| **Total** | *32.5**  | |
 
