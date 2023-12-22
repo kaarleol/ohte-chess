@@ -6,7 +6,7 @@ Ohjelmaa on testattu sitä kehittäessä etenkin manuaalisesti tapahtunein järj
 
 ### Sovelluslogiikka
 
-Gameloopista vastaava App testataan TestApp-luokalla. Testaus on toteutettu suurimmaksiosin integraatiotestauksena oikeilla luokilla poislukien IO:n josta tehtiin Mock-olio. Lisäksi luokan sisäisten funktioiden haaraumia on testattu yksikkötestauksella samaisessa testiluokassa
+Gameloopista vastaava App testataan TestApp-luokalla. Testaus on toteutettu suurimmaksiosin integraatiotestauksena sen oikeilla palveluilla (Board, Turn, LegalMove) poislukien IO:n josta tehtiin Mock-olio. Lisäksi luokan sisäisten funktioiden haaraumia on testattu yksikkötestauksella samaisessa testiluokassa
 
 ### Palvelut
 
