@@ -1,6 +1,6 @@
 ### Käyttöohje
 
-Lataa projektin viimeisimmän releasen lähdekoodi githubin Assets osion alta Source code
+Lataa projektin viimeisimmän [releasen](https://github.com/kaarleol/ohte-chess/releases/tag/1.0.0) lähdekoodi githubin Assets osion alta Source code
 
 Siirry ladatuissa tiedostoissa ohte-chess -kansioon, joka sisältää itse sovelluksen.
 
