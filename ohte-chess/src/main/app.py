@@ -1,6 +1,7 @@
 from services.legal_moves import LegalMove
-from board import Board
-from turn import Turn
+from services.turn import Turn
+from entities.board import Board
+
 
 class App:
     '''
@@ -24,7 +25,8 @@ class App:
         new(): runs with 'new' command. Begins a new game
         resign(): runs with 'resign' command. End the game and prompts for a new one
         draw(): runs with 'resign' command. End the game and prompts for a new one
-        override(): runs with 'override' command to override mistakes by the program or tests or for fun
+        override(): runs with 'override' command to override mistakes by the program
+            or tests or for fun
         mate(): mate handling when one is reached
     '''
     def __init__(self, board, turn, io):
@@ -142,7 +144,7 @@ class App:
 
             if self.did_exit is True:
                 break
-            
+
             if did_cancel is False and self.command_written is False:
                 val = self.legality.log_move(self.move_from, self.move_to)
                 if val is not True:

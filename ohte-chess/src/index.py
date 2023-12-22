@@ -1,7 +1,7 @@
-from board import Board
-from turn import Turn
-from console_io import ConsoleIO
-from app import App
+from entities.board import Board
+from services.turn import Turn
+from services.console_io import ConsoleIO
+from main.app import App
 
 def main():
     '''

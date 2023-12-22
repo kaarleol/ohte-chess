@@ -1,10 +1,11 @@
 import unittest
-from board import Board
-
+from entities.board import Board
+from unittest.mock import Mock, MagicMock
 
 class testBoard(unittest.TestCase):
     def setUp(self):
-        self.test_board = Board()
+        self.io = Mock()
+        self.test_board = Board(self.io)
 
     def test_location_translater_with_correct_pos(self):
         val = self.test_board.location_translator('a', 1)
@@ -31,7 +32,7 @@ class testBoard(unittest.TestCase):
         val = self.test_board.location_translator('a', 2)
         self.assertEqual(val, "P")
 
-        self.test_board.move_piece('a2', 'a3')
+        self.test_board.move_piece('a2', 'a3', 'White', False)
 
         val = self.test_board.location_translator('a', 2)
         self.assertEqual(val, None)
