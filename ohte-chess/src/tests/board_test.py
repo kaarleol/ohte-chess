@@ -2,7 +2,7 @@ import unittest
 from entities.board import Board
 from unittest.mock import Mock, MagicMock
 
-class testBoard(unittest.TestCase):
+class TestBoard(unittest.TestCase):
     def setUp(self):
         self.io = Mock()
         self.test_board = Board(self.io)
