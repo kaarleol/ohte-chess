@@ -10,5 +10,5 @@
 | 20.12 | 4  | Siirtojen määrittely nappuloille|
 | 21.12 | 7  | Erikoissirtojen logiikkaa, tunnistus shakille ja matille, käyttöliittymäkomentoja, dokumentaatiota|
 | 22.12 | 9  | Dokumentaatio, bug fixejä, valtavasti testejä|
-| **Total** | *32.5**  | |
+| **Total** | **32.5**  | |
 
